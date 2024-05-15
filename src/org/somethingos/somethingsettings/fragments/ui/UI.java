@@ -15,11 +15,28 @@ import com.android.settings.SettingsPreferenceFragment;
 
 public class UI extends SettingsPreferenceFragment implements Preference.OnPreferenceChangeListener {
 
+    private static final String TAG = "QSPanelSettings";
+    private static final String[] qsCustPreferences = { "qs_tile_shape" };
+
     private ListPreference bootanimationPreference;
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        return true;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+
+        boolean qsStyleRound = Settings.Secure.getIntForUser(getContext().getContentResolver(),
+                Settings.Secure.QS_STYLE_ROUND, 1, UserHandle.USER_CURRENT) == 1;
+
+        if (!qsStyleRound) {
+            for (String key : qsCustPreferences) {
+                Preference preference = preferenceScreen.findPreference(key);
+                if (preference != null) {
+                    preference.setEnabled(false);
+                }
+            }
+        }
     }
 
     @Override
